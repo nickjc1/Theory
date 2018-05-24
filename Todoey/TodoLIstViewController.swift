@@ -12,11 +12,14 @@ class TodoListViewController: UITableViewController {
 
     //Declare veriable here:
     var itemArray : [String] = []
+    let defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
+        if let todoListArray = defaults.array(forKey: "TodoList") {
+            itemArray = todoListArray as! [String]
+        }
     }
 
     //MARK - TableView DataSource Methods:
@@ -63,6 +66,7 @@ class TodoListViewController: UITableViewController {
             } else {
                 self.itemArray.append("New Item")
             }
+            self.defaults.set(self.itemArray, forKey: "TodoList")
             self.tableView.reloadData()
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .default) {
@@ -74,7 +78,7 @@ class TodoListViewController: UITableViewController {
         alert.addAction(cancelAction)
         
         alert.addTextField { (alertTextField) in
-            print("addTextField into alert")  //test
+            print("add TextField into alert")  //test
             
             alertTextField.placeholder = "Create New Item"
             textField = alertTextField
