@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class TodoListViewController: UITableViewController, UISearchBarDelegate {
+class TodoListViewController: UITableViewController {
 
     //Declare veriable here:
     
@@ -28,7 +28,7 @@ class TodoListViewController: UITableViewController, UISearchBarDelegate {
         
     }
 
-    //MARK - TableView DataSource Methods:
+    //MARK: - TableView DataSource Methods
     
     //Declare cellForRowAtIndexPath here:
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -49,7 +49,7 @@ class TodoListViewController: UITableViewController, UISearchBarDelegate {
         return itemArray.count;
     }
     
-    //MARK - TableView Delegate Method:
+    //MARK: - TableView Delegate Method
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
@@ -68,7 +68,8 @@ class TodoListViewController: UITableViewController, UISearchBarDelegate {
         
     }
     
-    //MARK - addButton:
+    //MARK: - addButtonPressed method
+    
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         
         //declare a local variable:
@@ -104,7 +105,8 @@ class TodoListViewController: UITableViewController, UISearchBarDelegate {
         present(alert, animated: true, completion: nil)
     }
     
-    //save items method:
+    //MARK: - Model Manipulation Methods
+    
     func saveItems() {
         
         do {
@@ -112,19 +114,47 @@ class TodoListViewController: UITableViewController, UISearchBarDelegate {
         } catch {
             print("error save item array \(error)")
         }
-       
         self.tableView.reloadData()
     }
     
-    func loadItems() {
-        let request : NSFetchRequest<Item> = Item.fetchRequest()
+    func loadItems(with request : NSFetchRequest<Item> = Item.fetchRequest()) {
+        
         do {
             itemArray = try theContext.fetch(request)
         } catch {
             print("error fetch item array \(error)")
         }
         
+        tableView.reloadData()
     }
-    
+}
 
+//MARK: - Search Bar Methods
+
+extension TodoListViewController : UISearchBarDelegate {
+    
+//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+//
+//        let request : NSFetchRequest<Item> = Item.fetchRequest()
+//
+//        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+//
+//        loadItems(with: request)
+//
+//    }
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        let request : NSFetchRequest<Item> = Item.fetchRequest()
+        
+        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        if(searchBar.text?.count == 0) {
+            loadItems()
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        } else {
+            loadItems(with: request)
+        }
+    }
 }
