@@ -25,7 +25,7 @@ class CategoryViewController: UITableViewController {
         loadCategory()
     }
     
-    // MARK: - tableview delegate and tableview datasource method:
+    // MARK: - tableview datasource method:
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
@@ -37,6 +37,24 @@ class CategoryViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return categoryArray.count
+    }
+    
+    
+    // MARK: - tableview delegate method:
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "goToItem", sender: self)
+        
+    }
+    
+    // MARK: - prepare segue method:
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as! TodoListViewController
+        
+        if let indexPath = tableView.indexPathForSelectedRow {
+            destinationVC.selectedCategory = categoryArray[indexPath.row]
+        }
     }
     
     // MARK: - addbuttonPressed method:
